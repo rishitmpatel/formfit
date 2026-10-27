@@ -1,0 +1,13 @@
+{
+  "name": "formfit",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Make a photo or signature meet an online form's exact rules, 100% in the browser.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "presets-doc": "node tools/gen-presets-doc.mjs",
+    "serve": "python3 -m http.server 8080 -d site"
+  },
+  "license": "MIT"
+}

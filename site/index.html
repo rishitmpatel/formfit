@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>formfit - resize photo and signature for any form</title>
+<meta name="description" content="Make a photo or signature meet an online form's exact size, KB and pixel rules. Runs in your browser; nothing is uploaded.">
+<meta name="theme-color" content="#0f766e" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0c1211" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <div class="wrap top-row">
+    <a class="brand" href="./" aria-label="formfit"><span id="logo"></span><span class="brand-name">formfit</span></a>
+    <div class="top-actions">
+      <span class="chip chip-privacy" id="privacyChip"></span>
+      <button class="btn btn-ghost btn-sm" id="langBtn" type="button"></button>
+    </div>
+  </div>
+</header>
+
+<nav class="steps-nav" aria-label="Progress">
+  <ol class="wrap steps" id="steps"></ol>
+</nav>
+
+<main id="main" class="wrap" tabindex="-1">
+
+  <!-- Step 1 -->
+  <section id="step1" class="step" aria-labelledby="h1">
+    <div class="hero">
+      <h1 id="h1"></h1>
+      <p id="privacyLong" class="muted"></p>
+    </div>
+    <div class="search">
+      <label for="q" class="sr-only" id="qLabel"></label>
+      <span id="searchIcon" class="search-ic"></span>
+      <input id="q" type="search" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+    </div>
+    <div class="chips" id="groupChips" role="tablist"></div>
+    <div id="presetList"></div>
+  </section>
+
+  <!-- Step 2 -->
+  <section id="step2" class="step" hidden aria-labelledby="h2">
+    <h2 id="h2"></h2>
+    <div id="specCard" class="card spec-compact"></div>
+    <div id="doneChips" class="done-chips"></div>
+    <div id="drop" class="drop" tabindex="-1">
+      <div class="drop-ic" id="dropIc"></div>
+      <p id="dropHint" class="drop-hint"></p>
+      <div class="drop-btns">
+        <button class="btn btn-primary btn-lg" id="btnCamera" type="button"></button>
+        <button class="btn btn-secondary btn-lg" id="btnFile" type="button"></button>
+      </div>
+      <p class="muted small" id="pasteHint"></p>
+      <input id="inCamera" type="file" accept="image/*" capture="user" hidden>
+      <input id="inFile" type="file" accept="image/*" hidden>
+    </div>
+    <p id="tip" class="tip"></p>
+    <div id="addError" class="alert alert-bad" role="alert" hidden></div>
+    <div class="nav-row"><button class="btn btn-ghost" id="back2" type="button"></button></div>
+  </section>
+
+  <!-- Step 3 -->
+  <section id="step3" class="step" hidden aria-labelledby="h3">
+    <h2 id="h3"></h2>
+    <p class="muted" id="adjustHint"></p>
+    <div class="adjust">
+      <div class="adjust-main">
+        <div class="stage"><canvas id="stage" tabindex="0" role="application"></canvas></div>
+        <div class="tools">
+          <div class="field-row">
+            <label for="zoom" id="zoomLabel"></label>
+            <input id="zoom" type="range" min="0" max="1000" value="0">
+          </div>
+          <div class="field-row">
+            <label for="straighten" id="strLabel"></label>
+            <input id="straighten" type="range" min="-100" max="100" value="0">
+            <output id="strOut" class="out">0&deg;</output>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-secondary" id="btnRotate" type="button"></button>
+            <button class="btn btn-secondary" id="btnFit" type="button"></button>
+            <button class="btn btn-secondary" id="btnFace" type="button" hidden></button>
+          </div>
+          <label class="check" id="guideRow"><input type="checkbox" id="chkGuide" checked><span id="guideLabel"></span></label>
+        </div>
+      </div>
+      <div class="adjust-side">
+        <details class="card enhance" open>
+          <summary id="enhanceTitle"></summary>
+          <div class="field-row">
+            <label for="brightness" id="brLabel"></label>
+            <input id="brightness" type="range" min="-50" max="50" value="0">
+          </div>
+          <div class="field-row">
+            <label for="contrast" id="coLabel"></label>
+            <input id="contrast" type="range" min="-50" max="50" value="0">
+          </div>
+          <label class="check" id="whitenRow"><input type="checkbox" id="chkWhiten"><span id="whitenLabel"></span></label>
+          <p class="muted small" id="whitenHint"></p>
+          <label class="check" id="cleanRow"><input type="checkbox" id="chkClean" checked><span id="cleanLabel"></span></label>
+          <p class="muted small" id="cleanHint"></p>
+        </details>
+        <div class="card preview-card">
+          <h3 id="previewTitle"></h3>
+          <div class="preview-box"><img id="previewImg" alt=""></div>
+          <p class="muted small" id="previewInfo"></p>
+          <p class="small note-warn" id="previewNote" hidden></p>
+        </div>
+      </div>
+    </div>
+    <div class="sticky-cta">
+      <button class="btn btn-ghost" id="back3" type="button"></button>
+      <button class="btn btn-primary btn-lg grow" id="btnMake" type="button"></button>
+    </div>
+  </section>
+
+  <!-- Step 4 -->
+  <section id="step4" class="step" hidden aria-labelledby="h4" aria-live="polite">
+    <h2 id="h4"></h2>
+    <div id="working" class="working" hidden><span class="spinner" aria-hidden="true"></span><span id="workingText"></span></div>
+    <div id="result" hidden>
+      <div class="result-grid">
+        <div class="result-preview"><img id="resultImg" alt=""></div>
+        <div class="result-info">
+          <p class="filename" id="fileName"></p>
+          <p id="verdict" class="verdict"></p>
+          <ul class="ticks" id="ticks"></ul>
+          <p class="muted small" id="resultMeta"></p>
+          <div id="resultNotes"></div>
+        </div>
+      </div>
+      <div class="pad-row">
+        <label class="check"><input type="checkbox" id="chkPad" checked><span id="padLabel"></span></label>
+        <p class="muted small" id="padHint"></p>
+      </div>
+      <div class="btn-row result-actions">
+        <a class="btn btn-primary btn-lg" id="btnDownload" download><span id="dlIc"></span><span id="dlText"></span></a>
+        <button class="btn btn-secondary btn-lg" id="btnShare" type="button" hidden></button>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-accent-outline btn-lg" id="btnNext" type="button" hidden></button>
+      </div>
+      <div class="btn-row sub">
+        <button class="btn btn-ghost" id="btnAdjustAgain" type="button"></button>
+        <button class="btn btn-ghost" id="btnChange" type="button"></button>
+        <button class="btn btn-ghost" id="btnStartOver" type="button"></button>
+      </div>
+      <div id="filesMade" class="card" hidden></div>
+    </div>
+    <div id="exportError" class="alert alert-bad" role="alert" hidden></div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p id="footPrivacy"></p>
+    <p class="muted small" id="footSources"></p>
+    <p class="muted small"><span id="offlineChip" hidden></span></p>
+  </div>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
